@@ -1,4 +1,4 @@
-package ru.movie.proxy;
+package ru.movie.proxy.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
