@@ -1,13 +1,13 @@
-package ru.movie.proxy;
+package ru.movie.event;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Application {
+public class EventApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ProxyApplication.class, args);
+        SpringApplication.run(EventApplication.class, args);
     }
-
 }
+
