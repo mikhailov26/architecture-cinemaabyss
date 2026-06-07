@@ -1,5 +1,5 @@
 # Build stage
-FROM openjdk:21-jdk-slim as build
+FROM eclipse-temurin:21-jdk-alpine
 
 # Set working directory
 WORKDIR /app
