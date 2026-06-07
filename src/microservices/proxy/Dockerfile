@@ -1,21 +1,26 @@
-FROM --platform=$BUILDPLATFORM openjdk:21-jdk-slim as build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-COPY . .
+# Копируем POM файлы
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-RUN ./mvnw clean install -DskipTests
+# Копируем исходники и собираем
+COPY src src
+RUN mvn clean package -DskipTests
 
-COPY src /app/src
-
-RUN ./mvnw clean install -DskipTests
-
-FROM openjdk:21-jdk-slim
+# Запуск
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/target/app.jar app.jar
+# Копируем JAR из этапа build
+COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8000
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+EXPOSE 8082
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

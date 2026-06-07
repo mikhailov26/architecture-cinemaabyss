@@ -1,32 +1,18 @@
 # Build stage
-FROM eclipse-temurin:21-jdk-alpine
-
-# Set working directory
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-# Copy build.gradle and settings.gradle files
-COPY . .
+# Копируем pom.xml и скачиваем зависимости
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Download dependencies
-RUN ./mvnw clean install -DskipTests
-
-# Copy the source code
-COPY src /app/src
-
-# Build the application
-RUN ./mvnw clean install -DskipTests
+# Копируем исходники и собираем
+COPY src ./src
+RUN mvn clean package -DskipTests
 
 # Runtime stage
-FROM openjdk:21-jdk-slim
-
-# Set working directory
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-
-# Copy the binary from the build stage
-COPY --from=build /app/target/app.jar app.jar
-
-# Expose the port the app runs on
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8082
-
-# Command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
