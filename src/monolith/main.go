@@ -12,10 +12,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-
 // Database connection
 var db *sql.DB
-
 
 // Models
 type User struct {
