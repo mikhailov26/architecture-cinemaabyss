@@ -1,41 +1,33 @@
+{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cinemaabyss-ingress
-  namespace: cinemaabyss
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "cinemaabyss.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: nginx
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
   rules:
-    - host: cinemaabyss.example.com
-      http:
-        paths:
-          - path: /api/events
-            pathType: Prefix
-            backend:
-              service:
-                name: events-service
-                port:
-                  number: 8082
-          - path: /api/movies
-            pathType: Prefix
-            backend:
-              service:
-                name: movies-service
-                port:
-                  number: 8081
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: monolith
-                port:
-                  number: 8080
-          - path: /health
-            pathType: Prefix
-            backend:
-              service:
-                name: proxy-service
-                port:
-                  number: 8000
+  {{- range .Values.ingress.hosts }}
+  - host: {{ .host }}
+    http:
+      paths:
+      {{- range .paths }}
+      - path: {{ .path }}
+        pathType: {{ .pathType }}
+        backend:
+          service:
+            name: {{ .service }}
+            port:
+              number: {{ .port }}
+      {{- end }}
+  {{- end }}
+{{- end }}
