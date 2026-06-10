@@ -67,10 +67,10 @@ metadata:
     app.kubernetes.io/name: {{ include "cinemaabyss.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-   selector:
+  selector:
     app: events-service
-   ports:
+  ports:
     - port: 8082
       targetPort: 8082
-   type: ClusterIP
+  type: ClusterIP
 {{- end }}
