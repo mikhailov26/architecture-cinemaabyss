@@ -12,8 +12,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+
 // Database connection
 var db *sql.DB
+
 
 // Models
 type User struct {
@@ -21,6 +23,7 @@ type User struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }
+
 
 type Movie struct {
 	ID          int      `json:"id"`
