@@ -5,7 +5,7 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+[Диаграмма](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/container.puml)
 
 # Задание 2
 
@@ -57,7 +57,11 @@
     - Добавьте в docker-compose новый сервис, kafka там уже есть
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
-Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
+Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090
+[скриншот тестов](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/postman-test-result.png)
+[скриншот топиков Kafka из UI](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/Kafka-UI-topics.png)
+[скриншот тестового события Kafka из UI](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/movie-event-message-example.png)
+
 
 # Задание 3
 
