@@ -1,8 +1,11 @@
- name: cinemaabyss-ingress
- namespace: cinemaabyss
- annotations:
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cinemaabyss-ingress
+  namespace: cinemaabyss
+  annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
- spec:
+spec:
   ingressClassName: nginx
   rules:
     - host: cinemaabyss.example.com
