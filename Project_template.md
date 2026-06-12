@@ -348,7 +348,6 @@ kafka.common.InconsistentClusterIdException: The Cluster ID OkOjGPrdRimp8nkFohYk
 
 Проверьте развертывание:
 ```bash
-kubectl get pods -n cinemaabyss
 minikube tunnel
 ```
 

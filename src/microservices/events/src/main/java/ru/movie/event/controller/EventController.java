@@ -3,7 +3,7 @@ package ru.movie.event.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.movie.event.kafka.EventProducer;
+import ru.movie.event.kafka.EventsProducer;
 import ru.movie.event.model.MovieEvent;
 import ru.movie.event.model.PaymentEvent;
 import ru.movie.event.model.UserEvent;
@@ -15,15 +15,15 @@ import java.util.UUID;
 @RequestMapping("/api/events")
 public class EventController {
 
-    private final EventProducer producer;
+    private final EventsProducer producer;
 
-    public EventController(EventProducer producer) {
+    public EventController(EventsProducer producer) {
         this.producer = producer;
     }
 
     @PostMapping("/user")
     public ResponseEntity<Map<String, Object>> createUserEvent(@RequestBody UserEvent event) {
-        String key = event.id() != null ? event.id() : UUID.randomUUID().toString();
+        String key = event.userId() != null ? event.userId() : UUID.randomUUID().toString();
         producer.sendUserEvent(key, event);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("status", "success", "type", "User", "key", key));
     }

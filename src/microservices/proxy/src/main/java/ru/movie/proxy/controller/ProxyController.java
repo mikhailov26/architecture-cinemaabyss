@@ -1,79 +1,52 @@
 package ru.movie.proxy.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.util.Enumeration;
 
 @RestController
 public class ProxyController {
 
-    private static final Logger log = LoggerFactory.getLogger(ProxyController.class);
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Value("${GRADUAL_MIGRATION}")
+    private String gradualMigration;
 
-    @Value("${monolith.url:http://localhost:8080}")
+    @Value("${MOVIES_MIGRATION_PERCENT}")
+    private int moviesMigrationPercent;
+
+    @Value("${MONOLITH_URL}")
     private String monolithUrl;
 
-    @Value("${movies.service.url:http://localhost:8081}")
+    @Value("${MOVIES_SERVICE_URL}")
     private String moviesServiceUrl;
 
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("{\"status\":\"OK\"}");
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    @RequestMapping("/api/movies/**")
-    public ResponseEntity<byte[]> proxyMovies(HttpServletRequest request) throws IOException {
-        return forward(request, moviesServiceUrl);
-    }
-
-    @RequestMapping("/api/users/**")
-    public ResponseEntity<byte[]> proxyUsers(HttpServletRequest request) throws IOException {
-        return forward(request, monolithUrl);
-    }
-
-    private ResponseEntity<byte[]> forward(HttpServletRequest request, String url) throws IOException {
-        String query = request.getQueryString();
-        String fullUrl = url + request.getRequestURI() + (query != null ? "?" + query : "");
-
-        log.info("Forwarding {} to {}", request.getMethod(), fullUrl);
-
-        HttpHeaders headers = new HttpHeaders();
-        Enumeration<String> names = request.getHeaderNames();
-        if (names != null) {
-            while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                headers.add(name, request.getHeader(name));
+    @GetMapping("/api/movies")
+    public String getMovies(@RequestParam(required = false) String user) {
+        if (gradualMigration.equals("true")) {
+            // Переключаем трафик на новый сервис, используя Feature Flag
+            if (Math.random() * 100 < moviesMigrationPercent) {
+                return restTemplate.getForObject(moviesServiceUrl + "/api/movies", String.class);
+            } else {
+                return restTemplate.getForObject(monolithUrl + "/api/movies", String.class);
             }
-        }
-
-        byte[] body = request.getInputStream().readAllBytes();
-        HttpEntity<byte[]> entity = new HttpEntity<>(body, headers);
-
-        try {
-            ResponseEntity<byte[]> response = restTemplate.exchange(
-                    fullUrl,
-                    HttpMethod.valueOf(request.getMethod()),
-                    entity,
-                    byte[].class
-            );
-            return new ResponseEntity<>(response.getBody(), response.getStatusCode());
-        } catch (Exception e) {
-            log.error("Proxy error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Proxy error\"}".getBytes());
+        } else {
+            return restTemplate.getForObject(monolithUrl + "/api/movies", String.class);
         }
     }
+
+    @GetMapping("/health")
+    public String health() {
+        return restTemplate.getForObject(monolithUrl + "/health", String.class);
+    }
+
+
+    @GetMapping("/api/users")
+    public String getUsers() {
+        return restTemplate.getForObject(monolithUrl + "/api/users", String.class);
+    }
+
+
 }

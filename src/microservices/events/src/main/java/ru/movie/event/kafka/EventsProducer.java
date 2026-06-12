@@ -9,9 +9,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EventProducer {
-
-    private static final Logger log = LoggerFactory.getLogger(EventProducer.class);
+public class EventsProducer {
+    private static final Logger log = LoggerFactory.getLogger(EventsProducer.class);
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
@@ -23,7 +22,7 @@ public class EventProducer {
     @Value("${app.topics.movie}")
     private String movieTopic;
 
-    public EventProducer(KafkaTemplate<String, String> kafkaTemplate,
+    public EventsProducer(KafkaTemplate<String, String> kafkaTemplate,
                           ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
