@@ -22,7 +22,6 @@ type User struct {
 	Email    string `json:"email"`
 }
 
-
 type Movie struct {
 	ID          int      `json:"id"`
 	Title       string   `json:"title"`
