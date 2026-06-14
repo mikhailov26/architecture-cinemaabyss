@@ -1,0 +1,75 @@
+@startuml
+!define RECTANGLE class
+
+RECTANGLE UI {
+  :UI Service;
+  :Interacts with;
+}
+
+RECTANGLE API_Gateway {
+  :API Gateway;
+  :Entry point for all clients;
+}
+
+RECTANGLE Auth_Service {
+  :Auth Service;
+  :Authentication & Authorization;
+}
+
+RECTANGLE User_Service {
+  :User Service;
+  :Management of users;
+}
+
+RECTANGLE Video_Service {
+  :Video Service;
+  :Management of videos;
+}
+
+RECTANGLE Payment_Service {
+  :Payment Service;
+  :Processing of subscriptions;
+}
+
+RECTANGLE Metadata_Service {
+  :Metadata Service;
+  :Metadata management;
+}
+
+RECTANGLE Recommendation_System {
+  :Recommendation System;
+  :External recommendations;
+}
+
+RECTANGLE Marketplace {
+  :Marketplace;
+  :External marketplace;
+}
+
+
+RECTANGLE Metadata_DB {
+  :Metadata DB;
+  :Stores metadata;
+}
+
+RECTANGLE Video_DB {
+  :Video DB;
+  :Stores video-data;
+}
+
+UI --> API_Gateway : Sends requests to
+API_Gateway --> Auth_Service : Sends requests to
+API_Gateway --> User_Service : Sends requests to
+API_Gateway --> Video_Service : Sends requests to
+API_Gateway --> Payment_Service : Sends requests to
+API_Gateway --> Metadata_Service : Sends requests to
+API_Gateway --> Recommendation_System : Sends requests to
+API_Gateway --> Marketplace : Sends requests to
+
+Metadata_Service --> Metadata_DB : Stores metadata
+Video_Service --> Video_DB : Stores video data
+Video_Service --> Kafka : Interacts for video recommendation
+Metadata_Service --> Kafka : Interacts for metadata recommendations
+Recommendation_System --> Kafka : Reads data from Kafka
+
+@enduml

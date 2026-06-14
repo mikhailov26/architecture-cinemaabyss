@@ -5,7 +5,7 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+[Диаграмма](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/container.puml)
 
 # Задание 2
 
@@ -57,7 +57,12 @@
     - Добавьте в docker-compose новый сервис, kafka там уже есть
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
-Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
+Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090
+[скриншот тестов](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/postman-test-result.png)
+[скриншот топиков Kafka из UI](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/Kafka-UI-topics.png)
+[скриншот тестового события Kafka из UI](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/movie-event-message-example.png)
+[скриншот тестов (обновлённый)](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/run-test-result.png)
+
 
 # Задание 3
 
@@ -274,6 +279,8 @@ cat .docker/config.json | base64
 
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
+[скриншот cтраницы](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/movies-list.png)
+[скриншот логов](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/event-service-logs.png)
 
 
 # Задание 4
@@ -342,13 +349,16 @@ kafka.common.InconsistentClusterIdException: The Cluster ID OkOjGPrdRimp8nkFohYk
 
 Проверьте развертывание:
 ```bash
-kubectl get pods -n cinemaabyss
 minikube tunnel
 ```
+
 
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+[скриншот терминала](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/pods.png)
+[скриншот cтраницы](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/movies-list.png)
+
 
 ## Удаляем все
 
