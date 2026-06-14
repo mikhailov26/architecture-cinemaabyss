@@ -2,32 +2,75 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cinemaabyss-ingress
+  name: {{ .Values.ingress.name | default "cinemaabyss-ingress" }}
   namespace: {{ .Values.global.namespace }}
-  labels:
-    app.kubernetes.io/name: {{ include "cinemaabyss.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+    nginx.ingress.kubernetes.io/ssl-redirect: {{ .Values.ingress.sslRedirect | default "false" | quote }}
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
-  {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-  - host: {{ .host }}
-    http:
-      paths:
-      {{- range .paths }}
-      - path: {{ .path }}
-        pathType: {{ .pathType }}
-        backend:
-          service:
-            name: {{ .service }}
-            port:
-              number: {{ .port }}
-      {{- end }}
-  {{- end }}
+    - host: {{ .Values.ingress.host | default "cinemaabyss.example.com" }}
+      http:
+        paths:
+          - path: /api/movies/health
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: movies-service
+                port:
+                  number: 8081
+          - path: /api/movies
+            pathType: Prefix
+            backend:
+              service:
+                name: monolith
+                port:
+                  number: 8080
+          - path: /api/users
+            pathType: Prefix
+            backend:
+              service:
+                name: monolith
+                port:
+                  number: 8080
+          - path: /api/payments
+            pathType: Prefix
+            backend:
+              service:
+                name: monolith
+                port:
+                  number: 8080
+          - path: /api/subscriptions
+            pathType: Prefix
+            backend:
+              service:
+                name: monolith
+                port:
+                  number: 8080
+          - path: /api/events
+            pathType: Prefix
+            backend:
+              service:
+                name: events-service
+                port:
+                  number: 8082
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: monolith
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: monolith
+                port:
+                  number: 8080
 {{- end }}
