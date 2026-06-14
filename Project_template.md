@@ -61,6 +61,7 @@
 [скриншот тестов](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/postman-test-result.png)
 [скриншот топиков Kafka из UI](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/Kafka-UI-topics.png)
 [скриншот тестового события Kafka из UI](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/movie-event-message-example.png)
+[скриншот тестов (обновлённый)](https://github.com/mikhailov26/architecture-cinemaabyss/diagrams/run-test-result.png)
 
 
 # Задание 3
