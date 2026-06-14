@@ -1,10 +1,9 @@
 package ru.movie.proxy.controller;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 public class ProxyController {
@@ -24,16 +23,46 @@ public class ProxyController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/api/movies")
-    public String getMovies(@RequestParam(required = false) String user) {
+    public String getMovies(@RequestParam(required = false) String user,
+                            @RequestParam(required = false) String id) {
         if (gradualMigration.equals("true")) {
-            // Переключаем трафик на новый сервис, используя Feature Flag
             if (Math.random() * 100 < moviesMigrationPercent) {
-                return restTemplate.getForObject(moviesServiceUrl + "/api/movies", String.class);
+                String url = moviesServiceUrl + "/api/movies";
+                if (id != null) {
+                    url += "?id=" + id;
+                }
+                return restTemplate.getForObject(url, String.class);
             } else {
-                return restTemplate.getForObject(monolithUrl + "/api/movies", String.class);
+                String url = monolithUrl + "/api/movies";
+                if (id != null) {
+                    url += "?id=" + id;
+                }
+                return restTemplate.getForObject(url, String.class);
             }
         } else {
-            return restTemplate.getForObject(monolithUrl + "/api/movies", String.class);
+            String url = monolithUrl + "/api/movies";
+            if (id != null) {
+                url += "?id=" + id;
+            }
+            return restTemplate.getForObject(url, String.class);
+        }
+    }
+
+    @PostMapping("/api/movies")
+    public ResponseEntity<String> createMovie(@RequestBody String movieJson) {
+        if (gradualMigration.equals("true")) {
+            if (Math.random() * 100 < moviesMigrationPercent) {
+                // Отправляем в movies-service
+                String response = restTemplate.postForObject(moviesServiceUrl + "/api/movies", movieJson, String.class);
+                return ResponseEntity.status(201).body(response);
+            } else {
+                // Отправляем в монолит
+                String response = restTemplate.postForObject(monolithUrl + "/api/movies", movieJson, String.class);
+                return ResponseEntity.status(201).body(response);
+            }
+        } else {
+            String response = restTemplate.postForObject(monolithUrl + "/api/movies", movieJson, String.class);
+            return ResponseEntity.status(201).body(response);
         }
     }
 
@@ -42,11 +71,14 @@ public class ProxyController {
         return restTemplate.getForObject(monolithUrl + "/health", String.class);
     }
 
-
     @GetMapping("/api/users")
     public String getUsers() {
         return restTemplate.getForObject(monolithUrl + "/api/users", String.class);
     }
 
-
+    @PostMapping("/api/users")
+    public ResponseEntity<String> createUser(@RequestBody String userJson) {
+        ResponseEntity<String> response = restTemplate.postForEntity(monolithUrl + "/api/users", userJson, String.class);
+        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+    }
 }
